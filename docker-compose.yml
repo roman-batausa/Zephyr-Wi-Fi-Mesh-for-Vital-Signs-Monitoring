@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # MQTT Broker (Mosquitto)
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto_broker
+    ports:
+      - "1883:1883" # Standard MQTT port
+      - "9001:9001" # Websockets port (useful for browser-based clients or testing)
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf # Custom config
+      - ./mosquitto/data:/mosquitto/data # Persistent data (e.g., retained messages)
+      - ./mosquitto/log:/mosquitto/log   # Logs
+    restart: unless-stopped
+
+  # Node-RED
+  node-red:
+    image: nodered/node-red:latest
+    container_name: node_red_flow
+    ports:
+      - "1880:1880" # Node-RED UI port
+    volumes:
+      - ./node-red/data:/data # Persistent flows and settings
+      # - ./node-red/settings.js:/data/settings.js # Optional: for custom settings
+    restart: unless-stopped
+    depends_on:
+      - mosquitto # Ensure Mosquitto starts before Node-RED
+
+  # InfluxDB
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb_tsdb
+    ports:
+      - "8086:8086" # InfluxDB UI and API port
+    volumes:
+      - ./influxdb/data:/var/lib/influxdb2 # Persistent data
+      - ./influxdb/config:/etc/influxdb2   # Configuration (optional)
+      # - ./influxdb/init.sh:/docker-entrypoint-initdb.d/init.sh # Optional: for initial setup script
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin12345 # Change this!
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin12345 # Change this!
+      - DOCKER_INFLUXDB_INIT_ORG=wifi_mesh     # Change this!
+      - DOCKER_INFLUXDB_INIT_BUCKET=sensor_data_bucket # Change this!
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=super_secret_token # Change this! Generate a strong token!
+    restart: unless-stopped
+    healthcheck: # Basic healthcheck to ensure InfluxDB is ready
+      test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
