@@ -37,6 +37,8 @@ ipconfig
 
 ## Part 1 — Docker Services (Mosquitto, Node-RED, InfluxDB)
 
+Docker Desktop is recommended for easy server deployment
+
 ### 1.1 Create the directory structure
 
 ```bash
