@@ -2,7 +2,7 @@
 
 This guide walks you through setting up the complete server-side stack for the ESP32 Zephyr Mesh Network vital signs monitoring system.
 
-Note that 'app.py' and 'docker-compose.yml' files should have in their own folders.
+Note that 'app.py' and 'docker-compose.yml' files should be in their own folders.
 
 ## Stack Overview
 
