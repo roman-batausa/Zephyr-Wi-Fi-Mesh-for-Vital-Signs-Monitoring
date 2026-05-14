@@ -1,0 +1,63 @@
+&wifi {
+	status = "okay";
+};
+
+&i2c0 {
+	sh1106: sh1106@3c {
+		compatible = "sinowealth,sh1106";
+		reg = <0x3c>;
+		height = <64>;
+		width = <132>;
+		segment-offset = <0>;
+		page-offset = <0>;
+		display-offset = <0>;
+		multiplex-ratio = <63>;
+		prechargep = <0x22>;
+		com-invdir;
+		segment-remap;
+	};
+	max30101: max30101@57 {
+		compatible = "maxim,max30101";
+		reg = <0x57>;
+	};
+};
+
+/ {
+	aliases {
+        led-g = &led_0;
+		led-y = &led_1;
+		led-r = &led_2;
+		btn-top = &button_0;
+		btn-bot = &button_1;
+    };
+
+	wifi_ap: wifi_ap {
+		compatible = "espressif,esp32-wifi";
+		status = "okay";
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		led_0: d25 {
+			gpios = <&gpio0 25 GPIO_ACTIVE_HIGH>;
+		};
+		led_1: d26 {
+			gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
+		};
+		led_2: d27 {
+			gpios = <&gpio0 27 GPIO_ACTIVE_HIGH>;
+		};
+	};
+	buttons {
+		compatible = "gpio-keys";
+		debounce-interval-ms = <30>;
+		polling-mode;
+
+		button_0: d32 {
+			gpios = <&gpio1 32 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+		};
+		button_1: d33 {
+			gpios = <&gpio1 33 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+		};
+	};
+};
